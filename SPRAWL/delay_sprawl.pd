@@ -1,4 +1,4 @@
-#N canvas -1593 106 1000 698 10;
+#N canvas 312 233 1000 698 10;
 #X obj 49 514 netsend -u -b;
 #X msg 101 477 disconnect;
 #X text 99 430 1: connect;
@@ -20,7 +20,7 @@
 #X obj 96 440 t b f, f 13;
 #X obj 255 476 r source;
 #X obj 240 529 pack i f, f 13;
-#X floatatom 419 293 5 0 0 0 - - -;
+#X floatatom 419 295 5 0 0 0 - - -;
 #X obj 240 502 i;
 #X obj 240 444 t b f, f 13;
 #X obj 935 508 r source;
@@ -31,13 +31,13 @@
 #X text 124 124 2: Set source to control (0...16);
 #X obj 310 662 outlet;
 #X obj 112 349 hsl 300 35 0 3 0 0 empty empty W_AZIM -2 -8 0 10 -262144
--1 -1 8700 1;
+-1 -1 0 1;
 #X obj 113 285 hsl 300 35 0 3 0 0 empty empty W_ELEV -2 -8 0 10 -262144
--1 -1 10357 1;
-#X obj 488 366 hsl 200 30 0 1 0 0 empty empty Samplelenght -2 -8 0
-10 -262144 -1 -1 4400 1;
+-1 -1 0 1;
+#X obj 488 366 hsl 200 30 0 0.7 0 0 empty empty Samplelenght -2 -8
+0 10 -262144 -1 -1 0 1;
 #X obj 712 123 vsl 30 200 0 1 0 0 empty empty Dry/Wet 0 -9 0 10 -262144
--1 -1 19300 1;
+-1 -1 0 1;
 #X obj 548 477 r source;
 #X obj 533 530 pack i f, f 13;
 #X floatatom 601 331 5 0 0 0 - - -;
@@ -53,10 +53,9 @@
 #X obj 678 570 oscformat source delaytime;
 #X obj 533 566 oscformat source fb;
 #X obj 489 125 vsl 30 200 0 1 0 0 empty empty Delaytime 0 -9 0 10 -262144
--1 -1 5400 1;
+-1 -1 0 1;
 #X obj 601 124 vsl 30 200 0 3 0 0 empty empty Feedback 0 -9 0 10 -262144
--1 -1 19500 1;
-#X text 560 350 [0 \, 1]s;
+-1 -1 0 1;
 #X text 527 313 0s;
 #X text 524 120 1s;
 #X text 637 315 0;
@@ -69,6 +68,7 @@
 #X text 160 269 [0 \, 3]Hz;
 #X text 158 332 [0 \, 3]Hz;
 #X text 107 243 SPATIAL SECTION for all sources;
+#X text 560 350 [0 \, 0.7]s;
 #X connect 1 0 2 0;
 #X connect 3 0 26 0;
 #X connect 4 0 3 0;
@@ -79,13 +79,13 @@
 #X connect 9 0 8 0;
 #X connect 9 1 6 1;
 #X connect 10 0 13 1;
-#X connect 11 0 55 0;
+#X connect 11 0 54 0;
 #X connect 12 0 14 0;
 #X connect 13 0 11 0;
 #X connect 14 0 13 0;
 #X connect 14 1 11 1;
 #X connect 15 0 18 1;
-#X connect 16 0 56 0;
+#X connect 16 0 55 0;
 #X connect 17 0 19 0;
 #X connect 18 0 16 0;
 #X connect 19 0 18 0;
@@ -118,8 +118,8 @@
 #X connect 44 0 4 0;
 #X connect 45 0 38 0;
 #X connect 46 0 33 0;
+#X connect 54 0 4 0;
 #X connect 55 0 4 0;
-#X connect 56 0 4 0;
 #X coords 0 -1 1 1 700 300 2 100 100;
 #X restore 40 54 pd sub1;
 #N canvas 1 119 556 457 default 0;

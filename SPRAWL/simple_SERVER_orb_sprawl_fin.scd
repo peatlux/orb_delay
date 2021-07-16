@@ -76,7 +76,7 @@ s.waitForBoot({
 			|
 
 			var sig = HOABinaural.ar(~hoa_order, In.ar(in_bus,~n_hoa_channels));
-			Out.ar(out_bus, sig.range(0,1));
+			Out.ar(out_bus, Normalizer.ar(sig,1,0.1));
 
 	}).add;
 	s.sync;
@@ -87,12 +87,12 @@ s.waitForBoot({
 	Out.ar(out_bus,wet*delay+((1-wet)*sig));
 	}).add;*/
 
-	SynthDef(\flaechendelay, {|samplelen=3, delaytime=0.5,fb=3.0,wet=0.8, tempo=120, in_bus=nil, out_bus=nil|
+	SynthDef(\flaechendelay, {|samplelen=0.2, delaytime=0.5,fb=1.0,wet=0.8, tempo=120, in_bus=nil, out_bus=nil|
 		var sig = In.ar(in_bus,1);
-		var env=Decay2.ar(Impulse.ar(1/(4*delaytime)),0.02,samplelen);
+		var env=Decay2.kr(Impulse.kr(1/(4*delaytime)),0.02,samplelen);
 		var grain=env*sig;
 		var delay=CombL.ar(grain,2*samplelen,delaytime,fb);
-		Out.ar(out_bus,LeakDC.ar(delay)*wet+((1-wet)*sig));
+		Out.ar(out_bus,LeakDC.ar(delay*wet+((1-wet)*sig)));
 	}).add;
 	s.sync;
 

@@ -78,7 +78,7 @@ s.waitForBoot({
 			|
 
 			var sig = HOABinaural.ar(~hoa_order, In.ar(in_bus,~n_hoa_channels));
-			Out.ar(out_bus, sig.range(0,1));
+			Out.ar(out_bus, sig/~nSources);
 
 	}).add;
 	s.sync;
@@ -89,12 +89,12 @@ s.waitForBoot({
 		Out.ar(out_bus,wet*delay+(1-wet)*sig);
 	}).add;*/
 
-	SynthDef(\flaechendelay, {|samplelen=3, delaytime=0.5,fb=3.0,wet=0.8, tempo=120, in_bus=nil, out_bus=nil|
+	SynthDef(\flaechendelay, {|samplelen=0.3, delaytime=0.5,fb=1.0,wet=0.8, tempo=120, in_bus=nil, out_bus=nil|
 		var sig = In.ar(in_bus,1);
-		var env=Decay2.ar(Impulse.ar(60/tempo),0.02,samplelen);
+		var env=Decay2.ar(Impulse.ar(1/(4*delaytime)),0.02,samplelen);
 		var grain=env*sig;
 		var delay=CombL.ar(grain,2*samplelen,delaytime,fb);
-		Out.ar(out_bus,LeakDC.ar(delay)*wet+((1-wet)*sig));
+		Out.ar(out_bus,LeakDC.ar(delay*wet+((1-wet)*sig)));
 	}).add;
 	s.sync;
 	/*SynthDef(\flaechendelay, {|samplelen=0.3, delaytime=0.2,fb=1.0, tempo=120|
@@ -207,31 +207,31 @@ s.waitForBoot({
 s.quit;
 s.scope(40);
 ~sig_BUS.scope;
-~test={Out.ar(2,SinOsc.ar(100,pi,0.1))}.play;
-~test2={Out.ar(4,SinOsc.ar(200,0,0.1))}.play;
-~test3={Out.ar(6,SinOsc.ar(300,0,0.1))}.play;
-~test4={Out.ar(8,SinOsc.ar(400,0,0.1))}.play;
-~test5={Out.ar(10,SinOsc.ar(500,0,0.1))}.play;
-~test6={Out.ar(12,SinOsc.ar(600,0,0.1))}.play;
-~test7={Out.ar(14,SinOsc.ar(700,0,0.1))}.play;
-~test8={Out.ar(16,SinOsc.ar(800,0,0.1))}.play;
+~test={Out.ar(2,SinOsc.ar(100,pi,1))}.play;
+~test2={Out.ar(4,SinOsc.ar(200,0,1))}.play;
+~test3={Out.ar(6,SinOsc.ar(300,0,1))}.play;
+~test4={Out.ar(8,SinOsc.ar(400,0,1))}.play;
+~test5={Out.ar(10,SinOsc.ar(500,0,1))}.play;
+~test6={Out.ar(12,SinOsc.ar(600,0,1))}.play;
+~test7={Out.ar(14,SinOsc.ar(700,0,1))}.play;
+~test8={Out.ar(16,SinOsc.ar(800,0,1))}.play;
 ~test.free;~test2.free;~test3.free;~test4.free;~test5.free;~test6.free;~test7.free;~test8.free;
 
 ~delaytime_BUS.scope;
-~delaytime={Out.kr(~delaytime_BUS,0.2!32)}.play;
+~delaytime={Out.kr(~delaytime_BUS,0.4!32)}.play;
 ~delaytime.free;
 ~fb_BUS.scope;
 ~fb={Out.kr(~fb_BUS,1!32)}.play;
 ~fb.free;
 ~samplelen_BUS.scope;
-~samplelen={Out.kr(~samplelen_BUS,0.5!32)}.play;
+~samplelen={Out.kr(~samplelen_BUS,0.2!32)}.play;
 ~samplelen.free;
 ~tempo_BUS.scope;
 ~tempo={Out.kr(~tempo_BUS,120!32)}.play;
 ~tempo.free;
 ~wet_BUS.scope;
 ~wet0={Out.kr(~wet_BUS,0!32)}.play;
-~wet={Out.kr(~wet_BUS,0.9!32)}.play;
+~wet={Out.kr(~wet_BUS,1!32)}.play;
 ~wet.free;
 
 32.do{arg i; ~delays[i].set(\delaytime, 0.1);}
@@ -271,7 +271,7 @@ w.front;
 
 
 
-{Decay2.ar(Impulse.ar(60/120),0.02,3)}.plot(1)
+{Decay2.ar(Impulse.ar(1/(4*0.3)),0.02,0.2)}.plot(1)
 EnvGen.kr(Env.adsr(0.01,0.3,1,0.1,1))
 { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1);
 
