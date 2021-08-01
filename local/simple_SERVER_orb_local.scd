@@ -27,7 +27,7 @@ s.options.maxLogins            = 4;
 s.options.bindAddress          = "0.0.0.0";
 s.options.memSize              = 250000; //increasing real time memory for the delay
 
-
+s.options.device
 // maximum number of access points to be used
 ~nSystems  = 16;
 
@@ -38,7 +38,7 @@ s.options.memSize              = 250000; //increasing real time memory for the d
 ~nSources  = ~nChannels*~nSystems;
 
 // HOA parameters
-~hoa_order      = 3;
+~hoa_order      = 4;
 ~n_hoa_channels = pow(~hoa_order + 1.0 ,2.0).asInteger;
 s.quit;
 s.boot;
@@ -89,7 +89,7 @@ s.waitForBoot({
 		Out.ar(out_bus,wet*delay+(1-wet)*sig);
 	}).add;*/
 
-	SynthDef(\flaechendelay, {|samplelen=0.3, delaytime=0.5,fb=1.0,wet=0.8, tempo=120, in_bus=nil, out_bus=nil|
+	SynthDef(\flaechendelay, {|samplelen=0.2, delaytime=0.5,fb=1.0,wet=0.8, tempo=120, in_bus=nil, out_bus=nil|
 		var sig = In.ar(in_bus,1);
 		var env=Decay2.ar(Impulse.ar(1/(4*delaytime)),0.02,samplelen);
 		var grain=env*sig;
@@ -206,6 +206,7 @@ s.waitForBoot({
 )
 s.quit;
 s.scope(40);
+
 ~sig_BUS.scope;
 ~test={Out.ar(2,SinOsc.ar(100,pi,1))}.play;
 ~test2={Out.ar(4,SinOsc.ar(200,0,1))}.play;
@@ -234,9 +235,10 @@ s.scope(40);
 ~wet={Out.kr(~wet_BUS,1!32)}.play;
 ~wet.free;
 
+~azim_BUS.scope;
 32.do{arg i; ~delays[i].set(\delaytime, 0.1);}
 32.do{arg i; ~delays[i].set(\samplelen, 0.4);}
-32.do{arg i; ~delays[i].set(\wet, 0.001);}
+32.do{arg i; ~delays[i].set(\wet, 1);}
 32.do{arg i; ~delays[i].set(\tempo, 140);}
 32.do{arg i; ~delays[i].set(\fb, 0.5);}
 
@@ -271,8 +273,17 @@ w.front;
 
 
 
-{Decay2.ar(Impulse.ar(1/(4*0.3)),0.02,0.2)}.plot(1)
-EnvGen.kr(Env.adsr(0.01,0.3,1,0.1,1))
+{CombN.ar(Decay2.ar(Impulse.ar(1/(4*0.3)),0.02,0.1)*SinOsc.ar(100,pi,1),2,0.3,3)}.plot(2.5)
+{EnvGen.kr(Env.adsr(0.03,0.5,0.9,0.1,1),Impulse.kr(0.8))}.plot(2)
 { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1);
 
 
+{SinOsc.ar(100,pi,1)}.plot(1)
+{
+    CombN.ar(
+        SinOsc.ar(500.rrand(1000), 0, 0.2) * Line.kr(1, 0, 0.1),
+        0.3,
+        0.25,
+        6
+    )
+}.scope;

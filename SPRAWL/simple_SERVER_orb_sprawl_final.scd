@@ -7,7 +7,7 @@ simple_SERVER.sc
 
 - needs SC-HOA library installed
 
-Henrik von Coler
+
 2021-06-09
 
 */
@@ -76,18 +76,17 @@ s.waitForBoot({
 			|
 
 			var sig = HOABinaural.ar(~hoa_order, In.ar(in_bus,~n_hoa_channels));
-			Out.ar(out_bus, Normalizer.ar(sig,1,0.1));
+			Out.ar(out_bus, Limiter.ar(sig,1.0));
 
 	}).add;
 	s.sync;
-	/*SynthDef(\flaechendelay, {|samplelen=0.3, delaytime=0.5,fb=1.0,wet=0.5, tempo=120, in_bus=nil, out_bus=nil|
-		var sig,env,grain,delay;
-		sig = In.ar(in_bus,1);
-		delay=Greyhole.ar(sig);
-	Out.ar(out_bus,wet*delay+((1-wet)*sig));
-	}).add;*/
+	// SynthDef of the Mono-Delay: samplelen=lenght of the sample which gets delayed [sec]
+	// delaytime=time between the delayed samples [sec]
+	// fb= feedback means the time for the echoes to decay by 60 decibels [sec]
+	// wet = mix of the original and the delayed signal. wet=0 means original signal only, wet=1 delayed signal only
+	// needs an input and output bus
 
-	SynthDef(\flaechendelay, {|samplelen=0.2, delaytime=0.5,fb=1.0,wet=0.8, tempo=120, in_bus=nil, out_bus=nil|
+	SynthDef(\flaechendelay, {|samplelen=0.2, delaytime=0.5,fb=1.0,wet=0, in_bus=nil, out_bus=nil|
 		var sig = In.ar(in_bus,1);
 		var env=Decay2.kr(Impulse.kr(1/(4*delaytime)),0.02,samplelen);
 		var grain=env*sig;
@@ -148,12 +147,13 @@ s.waitForBoot({
 	// create control buses for angle and delay parameters
 	~azim_BUS = Bus.control(s,~nSources);
 	~elev_BUS = Bus.control(s,~nSources);
+	// create control buses for delay parameters
 	~wet_BUS  = Bus.control(s,~nSources);
 	~samplelen_BUS  = Bus.control(s,~nSources);
 	~delaytime_BUS  = Bus.control(s,~nSources);
 	~fb_BUS  = Bus.control(s,~nSources);
 
-	// map buses to encoder parameters
+	// map buses to encoder and delay parameters
 	~binaural_encoders.do({arg e, i; e.map(\azim, ~azim_BUS.index+i,\elev, ~elev_BUS.index+i)});
 	~delays.do({arg e, i;
 		e.map(\wet, ~wet_BUS.index+i,\samplelen, ~samplelen_BUS.index+i,\samplelen, ~samplelen_BUS.index+i,\delaytime, ~delaytime_BUS.index+i,\fb, ~fb_BUS.index+i)});
@@ -161,12 +161,16 @@ s.waitForBoot({
 	s.sync;
 
 	/// Orbital Spatializing
+	// w_azim= frequency of the azimuthal orbit
+	// w_elev= frequence of the elevational orbit
+	// the phase array determines the initial position on the orbits (pairwise, so each participant gets one location)
 	SynthDef(\orbits, {|w_azim = 0.0, w_elev = 0.0|
 		var phase = Array.fill(~nSources,{arg i; 2*pi/~nSources*(i-(i%2))});
 		Out.kr(~azim_BUS,LFSaw.kr(w_azim,phase,pi));
 		Out.kr(~elev_BUS,LFSaw.kr(w_elev,phase,pi));
 	}).add;
 	s.sync;
+	//start the orbits
 	~orbits=Synth(\orbits);
 	s.sync;
 	// OSC listener for azimuth
@@ -184,36 +188,48 @@ s.waitForBoot({
 			var elev = msg[2];
 			~elev_BUS.setAt(msg[1],elev);
 	}, '/source/elev');
+
+		// OSC listener for samplelength
 	OSCdef('samplelen',
 		{
 			arg msg, time, addr, recvPort;
 			var samplelen = msg[2];
 			~samplelen_BUS.setAt(msg[1],samplelen);
 	}, '/source/samplelen');
+
+		// OSC listener for wetness
 	OSCdef('wet',
 		{
 			arg msg, time, addr, recvPort;
 			var wet = msg[2];
 			~wet_BUS.setAt(msg[1],wet);
 	}, '/source/wet');
+
+		// OSC listener for delaytime
 	OSCdef('delaytime',
 		{
 			arg msg, time, addr, recvPort;
 			var delaytime = msg[2];
 			~delaytime_BUS.setAt(msg[1],delaytime);
 	}, '/source/delaytime');
+
+		// OSC listener for feedback
 	OSCdef('fb',
 		{
 			arg msg, time, addr, recvPort;
 			var fb = msg[2];
 			~fb_BUS.setAt(msg[1],fb);
 	}, '/source/fb');
+
+		// OSC listener for azimuthal frequency
 	OSCdef('w_azim',
 		{
 			arg msg, time, addr, recvPort;
 			var w_azim  = msg[2];
 			~orbits.set(\w_azim, w_azim);
 	}, '/source/w_azim');
+
+		// OSC listener for elevational frequency
 	OSCdef('w_elev',
 		{
 			arg msg, time, addr, recvPort;
