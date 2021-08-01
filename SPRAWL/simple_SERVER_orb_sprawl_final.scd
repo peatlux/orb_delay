@@ -1,9 +1,7 @@
 /*
 
-simple_SERVER.sc
-
 - uses two sources for each access point (connected system)
-- control azimuth and elevation of each source via OSC
+- control parameters via OSC
 
 - needs SC-HOA library installed
 
@@ -80,10 +78,10 @@ s.waitForBoot({
 
 	}).add;
 	s.sync;
-	// SynthDef of the Mono-Delay: samplelen=lenght of the sample which gets delayed [sec]
-	// delaytime=time between the delayed samples [sec]
+	// SynthDef of the Mono-Delay: samplelen= lenght of the sample which gets delayed [sec]
+	// delaytime= time between the delayed samples [sec]
 	// fb= feedback means the time for the echoes to decay by 60 decibels [sec]
-	// wet = mix of the original and the delayed signal. wet=0 means original signal only, wet=1 delayed signal only
+	// wet= mix of the original and the delayed signal. wet=0 means original signal only, wet=1 delayed signal only
 	// needs an input and output bus
 
 	SynthDef(\flaechendelay, {|samplelen=0.2, delaytime=0.5,fb=1.0,wet=0, in_bus=nil, out_bus=nil|
@@ -162,7 +160,7 @@ s.waitForBoot({
 
 	/// Orbital Spatializing
 	// w_azim= frequency of the azimuthal orbit
-	// w_elev= frequence of the elevational orbit
+	// w_elev= frequency of the elevational orbit
 	// the phase array determines the initial position on the orbits (pairwise, so each participant gets one location)
 	SynthDef(\orbits, {|w_azim = 0.0, w_elev = 0.0|
 		var phase = Array.fill(~nSources,{arg i; 2*pi/~nSources*(i-(i%2))});
