@@ -17,7 +17,7 @@ The port will always be 57120. (Supercollider listening port)
 
 ## local use
 
-For local use you need to open the file in supercollider and set all the settings for the server (first few lines), before booting it.
+For local use you need to open the file `simple_SERVER_orb_local` in supercollider and set all the settings for the server (first few lines), before booting it.
 Maybe you need to specify your devices.   
 Then boot and play some Synths.   
 Set delay parameters inline or with the pd patch connected to localhost.
