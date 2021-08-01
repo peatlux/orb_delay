@@ -8,6 +8,11 @@ There is an additionally pure data patch to controll the delay parameters with O
 
 In the "local" folder is a version of the server with some testing sounds and parameter settings.
 
+## requirements
+
+- supercollider with SC-HOA library installed
+- PureData
+
 ## fist steps
 
 Execute the server file with `sclang simple_SERVER_orb_sprawl_final.scd`.   
