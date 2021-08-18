@@ -74,7 +74,7 @@ s.waitForBoot({
 			|
 
 			var sig = HOABinaural.ar(~hoa_order, In.ar(in_bus,~n_hoa_channels));
-			Out.ar(out_bus, Limiter.ar(sig,1.0));
+			Out.ar(out_bus, Limiter.ar(sig,1.0)); // Limiter included
 
 	}).add;
 	s.sync;
@@ -85,11 +85,11 @@ s.waitForBoot({
 	// needs an input and output bus
 
 	SynthDef(\flaechendelay, {|samplelen=0.2, delaytime=0.5,fb=1.0,wet=0, in_bus=nil, out_bus=nil|
-		var sig = In.ar(in_bus,1);
-		var env=Decay2.kr(Impulse.kr(1/(4*delaytime)),0.02,samplelen);
-		var grain=env*sig;
-		var delay=CombL.ar(grain,2*samplelen,delaytime,fb);
-		Out.ar(out_bus,LeakDC.ar(delay*wet+((1-wet)*sig)));
+		var sig = In.ar(in_bus,1); //Input signal
+		var env=Decay2.kr(Impulse.kr(1/(4*delaytime)),0.02,samplelen); //Envelope for one delay grain. Beat is 4/4 --> freq = 1/(4*delaytime)
+		var grain=env*sig; // One Grain on the first beat
+		var delay=CombL.ar(grain,2*samplelen,delaytime,fb); // Echoing the Grain
+		Out.ar(out_bus,LeakDC.ar(delay*wet+((1-wet)*sig))); // Mix with Dry Signal
 	}).add;
 	s.sync;
 
