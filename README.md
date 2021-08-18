@@ -11,7 +11,8 @@ In the "local" folder is a version of the server with some testing sounds and pa
 ## requirements
 
 - supercollider with SC-HOA library installed
-- PureData
+- PureData for GUI controls
+- working SPRAWL environment for use in a group
 
 ## fist steps
 
